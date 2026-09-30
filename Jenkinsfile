@@ -4,29 +4,27 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code...'
-                sh 'pwd && ls -la'
-            }
-        }
-        stage('Hello') {
-            steps {
-                echo 'Running hello.sh...'
-                sh './hello.sh'
+                checkout scm
+                echo 'Source code checked out from GitHub'
             }
         }
         stage('Build') {
             steps {
-                echo 'Build stage — placeholder for compile/package step'
+                echo 'Running hello.sh and capturing output...'
+                sh './hello.sh > output.txt'
+                echo 'Build complete — output.txt created'
             }
         }
         stage('Test') {
             steps {
-                echo 'Test stage — placeholder for running test suite'
+                echo 'Running test suite...'
+                sh 'chmod +x test.sh && ./test.sh'
             }
         }
-        stage('Deploy') {
+        stage('Archive') {
             steps {
-                echo 'Deploy stage — placeholder for deployment step'
+                echo 'Archiving artifacts...'
+                archiveArtifacts artifacts: 'output.txt', fingerprint: true
             }
         }
     }
