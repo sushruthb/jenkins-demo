@@ -1,23 +1,31 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
+    }
+
+    environment {
+        APP_ENV = "${params.ENVIRONMENT}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-                echo 'Source code checked out from GitHub'
+                echo "Environment: ${APP_ENV}"
             }
         }
         stage('Build') {
             steps {
-                echo 'Running hello.sh and capturing output...'
+                echo "Building for ${APP_ENV}..."
                 sh './hello.sh > output.txt'
                 echo 'Build complete — output.txt created'
             }
         }
         stage('Test') {
             steps {
-                echo 'Running test suite...'
+                echo "Running tests for ${APP_ENV}..."
                 sh './test.sh'
             }
         }
@@ -27,10 +35,19 @@ pipeline {
                 archiveArtifacts artifacts: 'output.txt', fingerprint: true
             }
         }
+        stage('Deploy') {
+            when {
+                expression { params.ENVIRONMENT == 'prod' }
+            }
+            steps {
+                echo "Deploying to ${APP_ENV}..."
+                echo 'Deploy complete.'
+            }
+        }
     }
 
     post {
-        success { echo 'Pipeline completed successfully!' }
+        success { echo "Pipeline completed successfully for ${APP_ENV}!" }
         failure { echo 'Pipeline failed — check logs above.' }
         always  { echo 'Pipeline finished.' }
     }
