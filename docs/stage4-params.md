@@ -52,7 +52,7 @@ stage('Deploy') {
 }
 ```
 
-**Important:** Use `params.ENVIRONMENT` inside `when`, not `env.APP_ENV`. The `environment {}` block variables are not accessible in `when` expressions in Declarative Pipeline.
+**Important:** Use `params.ENVIRONMENT` inside `when`, not `env.APP_ENV`. Using `params` directly is more reliable — `environment {}` variables can have lazy-evaluation edge cases in `when` expressions and are harder to debug.
 
 Other common `when` conditions:
 - `when { branch 'main' }` — run only on main branch

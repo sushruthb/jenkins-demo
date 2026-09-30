@@ -40,4 +40,4 @@ When a Jenkins job is configured with "Pipeline script from SCM", `checkout scm`
 bash test.sh
 ```
 
-All 3 tests should pass. This lets you verify test logic before pushing to GitHub.
+All tests should pass. This lets you verify test logic before pushing to GitHub.
