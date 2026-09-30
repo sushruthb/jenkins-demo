@@ -19,4 +19,11 @@ if ! grep -q "$(whoami)" output.txt; then
 fi
 echo "PASS: output.txt contains expected username"
 
+echo "--- Test 4: APP_ENV is set ---"
+if [ -z "${APP_ENV}" ]; then
+    echo "FAIL: APP_ENV is not set"
+    exit 1
+fi
+echo "PASS: APP_ENV is set to '${APP_ENV}'"
+
 echo "--- All tests passed ---"
