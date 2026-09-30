@@ -37,7 +37,7 @@ triggers {
 | Latency | Up to poll interval (e.g., 5 min) | Near-instant (seconds) |
 | Requires public URL | No | Yes |
 | Works on localhost | Yes | Only with ngrok/tunnel |
-| Production use | Legacy / firewall-restricted networks | Preferred |
+| Production use | Acceptable for firewalled environments; webhooks preferred otherwise | Preferred |
 
 ## Setting Up a Webhook with ngrok
 
@@ -57,10 +57,10 @@ ngrok http 8080
 
 You'll see output like:
 ```
-Forwarding  https://abc123.ngrok.io -> http://localhost:8080
+Forwarding  https://abc123.ngrok-free.app -> http://localhost:8080
 ```
 
-Copy the `https://...ngrok.io` URL. Keep this terminal open — closing it kills the tunnel.
+Copy the `https://...ngrok-free.app` URL. Keep this terminal open — closing it kills the tunnel.
 
 ### Step 3: Add webhook in GitHub
 
