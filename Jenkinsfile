@@ -9,6 +9,10 @@ pipeline {
         APP_ENV = "${params.ENVIRONMENT}"
     }
 
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
     stages {
         stage('Checkout') {
             steps {
