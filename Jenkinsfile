@@ -18,7 +18,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running test suite...'
-                sh 'chmod +x test.sh && ./test.sh'
+                sh './test.sh'
             }
         }
         stage('Archive') {
