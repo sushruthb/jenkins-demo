@@ -21,24 +21,35 @@ Jenkins Stage View shows `Test` and `Security Scan` as side-by-side columns unde
 
 **When to use:** Independent CI checks that don't share output — test suites, linters, security scans, platform builds.
 
-## parallel() step inside a stage
+## Nesting parallel stages inside a parallel branch
 
-Runs multiple step groups concurrently within a single stage branch. Called as a map of name → closure.
+In Declarative Pipeline, `parallel {}` can only contain `stage()` blocks — you cannot call `parallel()` as a step inside `steps {}`. To run sub-tasks in parallel within one branch, nest another `parallel {}` block inside that branch's stage:
 
 ```groovy
-stage('Test') {
-    steps {
-        parallel(
-            unitTests: { sh 'bash test.sh' },
-            lint:      { sh 'bash lint.sh' }
-        )
+stage('Verify') {
+    parallel {
+        stage('Test') {          // branch 1 — itself a parallel wrapper
+            parallel {
+                stage('Unit Tests') {
+                    steps { sh 'bash test.sh' }
+                }
+                stage('Lint') {
+                    steps { sh 'bash lint.sh' }
+                }
+            }
+        }
+        stage('Security Scan') { // branch 2
+            steps { sh './scan.sh' }
+        }
     }
 }
 ```
 
-Both closures run at the same time on the same executor. The stage completes when both finish (or one fails).
+Jenkins Stage View shows `Unit Tests` and `Lint` as nested columns inside `Test`, alongside `Security Scan`.
 
-**When to use:** Sub-tasks within one logical stage — multiple test suites, multiple lint targets, parallel file processing.
+**Note:** The `parallel(name: { closure })` step syntax works in Scripted Pipeline (`node {}`) but is **not valid** in Declarative Pipeline (`pipeline {}`). Always use nested `parallel { stage(...) }` blocks in Declarative.
+
+**When to use:** Sub-tasks within one branch that are independent — multiple test suites, multiple lint targets.
 
 ## Fail fast vs run-all
 
@@ -73,7 +84,7 @@ Use `failFast true` when a failing branch means the rest of the work is pointles
 | Pattern | Syntax | Use when |
 |---|---|---|
 | Parallel stages | `stage { parallel { stage... } }` | Independent CI checks — test, scan, multi-platform build |
-| Parallel steps | `parallel(name: { ... })` | Sub-tasks within one branch — multiple test suites, multiple lint targets |
+| Nested parallel stages | `stage { parallel { stage { parallel { stage... } } } }` | Sub-tasks within one branch — multiple test suites, lint + tests |
 
 ## Verifying parallel execution in Jenkins
 
