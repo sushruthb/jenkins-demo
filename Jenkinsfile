@@ -30,12 +30,18 @@ pipeline {
         stage('Verify') {
             parallel {
                 stage('Test') {
-                    steps {
-                        echo "Running tests for ${APP_ENV}..."
-                        parallel(
-                            unitTests: { sh 'APP_ENV=${APP_ENV} bash test.sh' },
-                            lint:      { sh 'bash lint.sh' }
-                        )
+                    parallel {
+                        stage('Unit Tests') {
+                            steps {
+                                echo "Running tests for ${APP_ENV}..."
+                                sh 'APP_ENV=${APP_ENV} bash test.sh'
+                            }
+                        }
+                        stage('Lint') {
+                            steps {
+                                sh 'bash lint.sh'
+                            }
+                        }
                     }
                 }
                 stage('Security Scan') {
