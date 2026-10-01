@@ -29,19 +29,15 @@ pipeline {
         }
         stage('Verify') {
             parallel {
-                stage('Test') {
-                    parallel {
-                        stage('Unit Tests') {
-                            steps {
-                                echo "Running tests for ${APP_ENV}..."
-                                sh 'APP_ENV=${APP_ENV} bash test.sh'
-                            }
-                        }
-                        stage('Lint') {
-                            steps {
-                                sh 'bash lint.sh'
-                            }
-                        }
+                stage('Unit Tests') {
+                    steps {
+                        echo "Running tests for ${APP_ENV}..."
+                        sh 'APP_ENV=${APP_ENV} bash test.sh'
+                    }
+                }
+                stage('Lint') {
+                    steps {
+                        sh 'bash lint.sh'
                     }
                 }
                 stage('Security Scan') {
