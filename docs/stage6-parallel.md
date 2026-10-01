@@ -42,20 +42,9 @@ Both closures run at the same time on the same executor. The stage completes whe
 
 ## Fail fast vs run-all
 
-**Default (fail fast):** If one parallel branch fails, Jenkins aborts the remaining branches immediately. No extra configuration needed.
+**Default (run-all):** All parallel branches run to completion even if one fails. All failures are reported together at the end. No extra configuration needed.
 
-**Explicit fail fast** (makes intent visible in code):
-```groovy
-stage('Verify') {
-    failFast true
-    parallel {
-        stage('Test') { ... }
-        stage('Security Scan') { ... }
-    }
-}
-```
-
-**Run all to completion** — all branches finish even if one fails, then all failures are reported together:
+**Explicit run-all** (makes intent visible in code):
 ```groovy
 stage('Verify') {
     failFast false
@@ -66,7 +55,18 @@ stage('Verify') {
 }
 ```
 
-Use `failFast false` when you want a full picture of all failures before fixing anything (e.g., a nightly report run).
+**Fail fast** — abort remaining branches immediately when one fails:
+```groovy
+stage('Verify') {
+    failFast true
+    parallel {
+        stage('Test') { ... }
+        stage('Security Scan') { ... }
+    }
+}
+```
+
+Use `failFast true` when a failing branch means the rest of the work is pointless (e.g., tests fail so there's no point running the security scan).
 
 ## When to use each pattern
 
