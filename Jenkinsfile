@@ -27,10 +27,24 @@ pipeline {
                 echo 'Build complete — output.txt created'
             }
         }
-        stage('Test') {
-            steps {
-                echo "Running tests for ${APP_ENV}..."
-                sh './test.sh'
+        stage('Verify') {
+            parallel {
+                stage('Test') {
+                    steps {
+                        echo "Running tests for ${APP_ENV}..."
+                        parallel(
+                            unitTests: { sh 'APP_ENV=${APP_ENV} bash test.sh' },
+                            lint:      { sh 'bash lint.sh' }
+                        )
+                    }
+                }
+                stage('Security Scan') {
+                    steps {
+                        echo 'Running security scan...'
+                        sh 'grep -rn "password\\|secret\\|token" . --include="*.sh" || true'
+                        echo 'Security scan complete'
+                    }
+                }
             }
         }
         stage('Archive') {
